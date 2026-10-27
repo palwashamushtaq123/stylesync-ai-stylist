@@ -1,0 +1,35 @@
+Python bytecode & cache
+
+pycache/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+Virtual Environments
+
+venv/
+env/
+ENV/
+.venv/
+
+Environment variables & secrets
+
+.env
+.env.local
+
+IDEs & Editors
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+OS specific files
+
+.DS_Store
+Thumbs.db
+
+Streamlit local settings
+
+.streamlit/secrets.toml
