@@ -73,16 +73,22 @@ with tab1:
     with col1:
         st.markdown("<div class='card'>", unsafe_allow_html=True)
         st.markdown("### 📸 Step 1: Skin Tone Analysis")
-        st.write("Upload any format photo of your hand, arm, or face for color extraction.")
+        st.write("Upload a photo or capture live using your camera for color extraction.")
         
-        uploaded_file = st.file_uploader("Upload Skin Image (All Formats)", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="brand_skin")
+        input_method = st.radio("Choose Input Method", ["Upload Image File", "Capture Live with Camera"], key="brand_input_method")
+        
+        uploaded_file = None
+        if input_method == "Upload Image File":
+            uploaded_file = st.file_uploader("Upload Skin Image (All Formats)", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="brand_skin")
+        else:
+            uploaded_file = st.camera_input("Take a photo of your hand, arm, or face", key="brand_camera")
         
         image_analyzed = False
         skin_data = {}
         
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
-            st.image(image, caption="Uploaded Image Source", width="stretch")
+            st.image(image, caption="Selected Image Source", width="stretch")
             
             with st.spinner("Extracting RGB values & skin tone palette..."):
                 skin_data = analyze_skin_tone(image)
@@ -112,7 +118,7 @@ with tab1:
         with col_a:
             age = st.slider("Age", 15, 60, 22, key="brand_age")
         with col_b:
-            height = st.selectbox("Height Range", ["Petite (Under 5'2\")", "Average (5'2\" - 5'7\")", "Tall (5'8\" and Above)"], key="brand_height")
+            height = st.selectbox("Height Range", ["Petite (Under 5'2'')", "Average (5'2'' - 5'7'')", "Tall (5'8'' and Above)"], key="brand_height")
             
         if gender == "Female":
             body_shape = st.selectbox("Select Female Body Shape", [
@@ -212,7 +218,7 @@ with tab1:
 
     if st.button("✨ Run AI Brand Stylist Agent", width="stretch", key="btn_brand"):
         if not image_analyzed:
-            st.error("⚠️ Please upload your skin tone picture first!")
+            st.error("⚠️ Please upload or capture your skin tone picture first!")
         else:
             with st.spinner(f"Querying {selected_brand} collection database & accessories stores..."):
                 state = {
@@ -240,16 +246,27 @@ with tab1:
 with tab2:
     st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("### ✂️ Custom Market Fabric Tailoring & Styling Assistant")
-    st.write("Upload a clear photo of your purchased unstitched fabric. Our AI Agent will analyze it and generate custom stitching blueprints and styling advice!")
+    st.write("Upload or capture your fabric and skin tone photo. Our AI Agent will analyze them and generate custom stitching blueprints and styling advice!")
     
     m_col1, m_col2 = st.columns(2)
     with m_col1:
-        fabric_img = st.file_uploader("Upload Bought Fabric Photo", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="market_fabric")
-        skin_img_m = st.file_uploader("Upload Your Hand/Face Photo", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="market_skin")
+        st.markdown("#### 🖼️ Fabric Photo")
+        fabric_input_method = st.radio("Fabric Input", ["Upload File", "Capture Live"], key="fabric_input_method")
+        if fabric_input_method == "Upload File":
+            fabric_img = st.file_uploader("Upload Bought Fabric Photo", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="market_fabric")
+        else:
+            fabric_img = st.camera_input("Capture Fabric Live", key="market_fabric_cam")
+            
+        st.markdown("#### 📸 Skin Tone Photo")
+        skin_input_method = st.radio("Skin Input", ["Upload File", "Capture Live"], key="skin_input_method")
+        if skin_input_method == "Upload File":
+            skin_img_m = st.file_uploader("Upload Your Hand/Face Photo", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="market_skin")
+        else:
+            skin_img_m = st.camera_input("Capture Skin/Face Live", key="market_skin_cam")
         
     with m_col2:
         m_gender = st.selectbox("Gender", ["Female", "Male"], key="m_gender_m")
-        m_height = st.selectbox("Height Range", ["Petite (Under 5'2\")", "Average (5'2\" - 5'7\")", "Tall (5'8\" and Above)"], key="m_height_m")
+        m_height = st.selectbox("Height Range", ["Petite (Under 5'2'')", "Average (5'2'' - 5'7'')", "Tall (5'8'' and Above)"], key="m_height_m")
         
         # Pakistani Body Shape with Pictures for Market Mode
         if m_gender == "Female":
@@ -295,7 +312,7 @@ with tab2:
 
     if st.button("✨ Generate Custom Tailoring Guide & Blueprint", width="stretch", key="btn_market"):
         if fabric_img is None or skin_img_m is None:
-            st.error("⚠️ Please upload both your fabric photo and skin tone photo first!")
+            st.error("⚠️ Please provide both your fabric photo and skin tone photo first!")
         else:
             with st.spinner("Analyzing fabric texture, colors, and body geometry for tailor instructions..."):
                 skin_pil = Image.open(skin_img_m)
@@ -318,13 +335,13 @@ with tab2:
                 
                 # Clean Fabric Showcase with Professional English Note
                 st.markdown("<div class='card'>", unsafe_allow_html=True)
-                st.markdown("### 🖼️ Your Uploaded Market Fabric Analysis:")
+                st.markdown("### 🖼️ Your Market Fabric Analysis:")
                 
                 f1, f2 = st.columns([1, 2])
                 with f1:
-                    st.image(fabric_img, caption="Your Actual Market Fabric", width="stretch")
+                    st.image(fabric_img, caption="Provided Market Fabric Source", width="stretch")
                 with f2:
-                    st.info("💡 **AI Tailor Note:** This fabric has been custom-styled based on your skin tone and body architecture. You can take this fabric image and blueprint to your local tailor to get the exact recommended cuts stitched!")
+                    st.info("💡 **AI Tailor Note:** This fabric has been custom-styled based on your skin tone and body architecture. You can take this design blueprint to your local tailor to get the exact recommended cuts stitched!")
                     
                 st.success("✅ Tailoring guide successfully generated!")
                 st.markdown("</div>", unsafe_allow_html=True)
