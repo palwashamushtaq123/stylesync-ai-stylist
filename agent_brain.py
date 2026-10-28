@@ -3,12 +3,42 @@ from langchain_core.messages import SystemMessage, HumanMessage
 import config
 import urllib.parse
 
-def generate_style_recommendation(state: dict) -> str:
-    llm = ChatGroq(
+def get_working_llm():
+    """Tries Primary Key (1) and Backup Key (2) one by one with automatic fallback."""
+    keys = []
+    
+    # 1. Pehli Primary Key check karein
+    if hasattr(config, "GROQ_API_KEY") and config.GROQ_API_KEY:
+        keys.append(config.GROQ_API_KEY)
+        
+    # 2. Doosri Backup Key check karein
+    if hasattr(config, "GROQ_API_KEY_2") and config.GROQ_API_KEY_2:
+        keys.append(config.GROQ_API_KEY_2)
+        
+    if not keys:
+        keys = [""]
+        
+    # Keys ko aik aik kar ke try karein ge
+    for key in keys:
+        try:
+            llm = ChatGroq(
+                temperature=0.7,
+                model_name=config.GROQ_MODEL,
+                groq_api_key=key
+            )
+            return llm
+        except Exception:
+            continue
+            
+    # Agar dono fail ho jayein toh pehli wali return kar do
+    return ChatGroq(
         temperature=0.7,
         model_name=config.GROQ_MODEL,
-        groq_api_key=config.GROQ_API_KEY
+        groq_api_key=keys[0]
     )
+
+def generate_style_recommendation(state: dict) -> str:
+    llm = get_working_llm()
     
     brand_search_urls = {
         "Khaadi": "https://pk.khaadi.com/search?q=",
@@ -66,11 +96,7 @@ def generate_style_recommendation(state: dict) -> str:
     return response.content
 
 def analyze_market_fabric(state: dict) -> str:
-    llm = ChatGroq(
-        temperature=0.7,
-        model_name=config.GROQ_MODEL,
-        groq_api_key=config.GROQ_API_KEY
-    )
+    llm = get_working_llm()
     
     prompt = f"""
     You are a master Pakistani Tailor and Fashion Designer.

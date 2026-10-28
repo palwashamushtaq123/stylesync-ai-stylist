@@ -1,11 +1,11 @@
-config_code = '''import os
+import os
 from dotenv import load_dotenv
 import streamlit as st
 
 # Load environment variables from .env file for local development
 load_dotenv()
 
-# Get API key from Streamlit Cloud Secrets first, then fallback to environment variables (.env)
+# Get Primary API key from Streamlit Cloud Secrets or .env
 GROQ_API_KEY = ""
 try:
     if "GROQ_API_KEY" in st.secrets:
@@ -16,6 +16,20 @@ except Exception:
 if not GROQ_API_KEY:
     GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
+# Get Backup API key from Streamlit Cloud Secrets or .env
+GROQ_API_KEY_2 = ""
+try:
+    if "GROQ_API_KEY_2" in st.secrets:
+        GROQ_API_KEY_2 = st.secrets["GROQ_API_KEY_2"]
+except Exception:
+    pass
+
+if not GROQ_API_KEY_2:
+    GROQ_API_KEY_2 = os.getenv("GROQ_API_KEY_2", "")
+
+# Combine into a list for automatic fallback rotation
+GROQ_API_KEYS = [key for key in [GROQ_API_KEY, GROQ_API_KEY_2] if key]
+
 # Get Model from Secrets or env or default
 GROQ_MODEL = ""
 try:
@@ -25,7 +39,7 @@ except Exception:
     pass
 
 if not GROQ_MODEL:
-GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
+    GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 
 # Supported local Pakistani brands
 PAK_BRANDS = [
@@ -39,9 +53,3 @@ PAK_BRANDS = [
     "Alkaram Studio",
     "Outfitters"
 ]
-'''.replace("GROQ_MODEL = os.getenv", "    GROQ_MODEL = os.getenv")
-
-with open("config.py", "w", encoding="utf-8") as f:
-    f.write(config_code)
-
-print("config.py updated successfully!")
