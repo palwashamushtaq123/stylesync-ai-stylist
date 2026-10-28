@@ -6,7 +6,7 @@ from agent_brain import generate_style_recommendation, analyze_market_fabric
 
 st.set_page_config(page_title="StyleSync AI - Pakistani Personal Stylist", page_icon="💃", layout="wide")
 
-# Custom CSS for Luxury Boutique Look with Borders & Gold Accents
+# Custom CSS for Luxury Boutique Look with Prominent Camera/Upload Buttons
 st.markdown("""
     <style>
     .main { background: #faf7f2; }
@@ -53,6 +53,28 @@ st.markdown("""
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         margin-bottom: 10px;
     }
+
+    /* Prominent Styling for Input Method Radio Options */
+    div[data-testid="stRadio"] > label {
+        font-size: 17px !important;
+        font-weight: bold !important;
+        color: #785109 !important;
+        margin-bottom: 8px !important;
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] {
+        background: #fdfbf7;
+        padding: 12px 18px;
+        border-radius: 15px;
+        border: 2px solid #d4af37;
+        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.15);
+        gap: 20px;
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] label {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #3b2c1a !important;
+        cursor: pointer;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -75,10 +97,10 @@ with tab1:
         st.markdown("### 📸 Step 1: Skin Tone Analysis")
         st.write("Upload a photo or capture live using your camera for color extraction.")
         
-        input_method = st.radio("Choose Input Method", ["Upload Image File", "Capture Live with Camera"], key="brand_input_method")
+        input_method = st.radio("✨ Choose Input Method", ["📁 Upload Image File", "📷 Capture Live with Camera"], key="brand_input_method")
         
         uploaded_file = None
-        if input_method == "Upload Image File":
+        if "📁 Upload Image File" in input_method:
             uploaded_file = st.file_uploader("Upload Skin Image (All Formats)", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="brand_skin")
         else:
             uploaded_file = st.camera_input("Take a photo of your hand, arm, or face", key="brand_camera")
@@ -251,15 +273,15 @@ with tab2:
     m_col1, m_col2 = st.columns(2)
     with m_col1:
         st.markdown("#### 🖼️ Fabric Photo")
-        fabric_input_method = st.radio("Fabric Input", ["Upload File", "Capture Live"], key="fabric_input_method")
-        if fabric_input_method == "Upload File":
+        fabric_input_method = st.radio("Fabric Input Method", ["📁 Upload File", "📷 Capture Live"], key="fabric_input_method")
+        if "📁 Upload File" in fabric_input_method:
             fabric_img = st.file_uploader("Upload Bought Fabric Photo", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="market_fabric")
         else:
             fabric_img = st.camera_input("Capture Fabric Live", key="market_fabric_cam")
             
         st.markdown("#### 📸 Skin Tone Photo")
-        skin_input_method = st.radio("Skin Input", ["Upload File", "Capture Live"], key="skin_input_method")
-        if skin_input_method == "Upload File":
+        skin_input_method = st.radio("Skin Input Method", ["📁 Upload File", "📷 Capture Live"], key="skin_input_method")
+        if "📁 Upload File" in skin_input_method:
             skin_img_m = st.file_uploader("Upload Your Hand/Face Photo", type=["jpg", "jpeg", "png", "webp", "heic", "jfif"], key="market_skin")
         else:
             skin_img_m = st.camera_input("Capture Skin/Face Live", key="market_skin_cam")
